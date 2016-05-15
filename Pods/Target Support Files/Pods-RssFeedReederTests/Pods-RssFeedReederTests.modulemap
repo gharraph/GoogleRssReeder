@@ -1,0 +1,6 @@
+framework module Pods_RssFeedReederTests {
+  umbrella header "Pods-RssFeedReederTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
