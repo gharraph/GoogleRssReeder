@@ -8,16 +8,21 @@
 
 import Foundation
 
+
 class RssRecord {
-    var imageUrl: String
-    var title: String
-    var shortDescription: String
-    var link: String
     
-    init(title: String, imageUrl: String, shortDescription: String, link: String)   {
-        self.imageUrl = imageUrl
-        self.shortDescription = shortDescription
-        self.title = title
-        self.link = link
+    var title: String
+    var description: String
+    var link: String
+    var pubDate: String
+    var imageUrl: String
+    
+    init(){
+        self.title = ""
+        self.description = ""
+        self.link = ""
+        self.pubDate = ""
+        self.imageUrl = ""
     }
+    
 }

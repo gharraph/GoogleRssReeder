@@ -10,8 +10,9 @@ import UIKit
 import Alamofire
 import AlamofireImage
 import XMLParser
+import Kanna
 
-class RssTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate  {
+class RssTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NSXMLParserDelegate  {
         
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
@@ -21,18 +22,16 @@ class RssTableViewController: UIViewController, UITableViewDataSource, UITableVi
         preferredMemoryUsageAfterPurge: 60 * 1024 * 1024
     )
 
-    
+    var myParser: NSXMLParser = NSXMLParser()
     var rssRecordList : [RssRecord] = [RssRecord]()
-    var selectedIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+    var rssRecord : RssRecord?
+    var isTagFound = [ "item": false , "title":false, "pubDate": false ,"link":false, "description":true]
     
-
+    // MARK - View functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-        
-        spinner.hidesWhenStopped = true
+        self.tableView.dataSource = self
+        self.tableView	.delegate = self
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -40,93 +39,176 @@ class RssTableViewController: UIViewController, UITableViewDataSource, UITableVi
             self.loadRSSData()
         }
     }
-
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-     // MARK: - Table view dataSource and Delegate
+    
+    
+    
+    // MARK: - Table view dataSource and Delegate
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
-    
+
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 60
+        return 80
     }
-    
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return rssRecordList.count
+        return self.rssRecordList.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCellWithIdentifier("rssCell", forIndexPath: indexPath)
-        
         let thisRecord : RssRecord  = self.rssRecordList[indexPath.row]
-        
-        if let cachedImage = getCachedImage(thisRecord.imageUrl){
-            cell.imageView?.image =  cachedImage
-        } else {
-            cell.imageView?.image = UIImage(named: "placeHolderImage")
-        }
         cell.textLabel?.text = thisRecord.title
-        cell.detailTextLabel?.text = thisRecord.shortDescription
-        
+        cell.detailTextLabel?.text = thisRecord.pubDate
+       if let cachedImage = getCachedImage(thisRecord.imageUrl){
+           cell.imageView?.image =  cachedImage
+       } else {
+           cell.imageView?.image = UIImage(named: "placeHolderImage")
+       }
+
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.selectedIndexPath = indexPath
         self.performSegueWithIdentifier("segueShowDetails", sender: self)
     }
     
-    // MARK: - xml load
-    private func loadRSSData(){
-        var results: Dictionary<String, Array<String>> = Dictionary()
+    
+    
+    
+    // MARK: - NSXML Parse delegate function
+    func parserDidStartDocument(parser: NSXMLParser) {
+    }
+
+    func parser(parser: NSXMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
         
-        self.spinner.startAnimating()
-//        Alamofire.request(.GET, "http://www.mocky.io/v2/5738c0d10f0000f601b121c4")
-        Alamofire.request(.GET, "http://news.google.com/?output=rss")
-            .validate(statusCode: 200..<300)
-            .responseString { response in
-                if let xmlString = response.result.value {
-                    results = XMLParser.sharedParser.decode(xmlString)
-                    self.populateRssRecordListWithResults(results)
-                    self.spinner.stopAnimating()
-                    dispatch_async(dispatch_get_main_queue(), { self.tableView.reloadData() })
-                }
-        }
-    }
-    
-    func populateRssRecordListWithResults(results: Dictionary<String, Array<String>>) {
-        for (key, values) in results {
-            for (index, value) in values.enumerate() {
-                if key == "title" {
-                    self.rssRecordList.append(RssRecord(title: value, imageUrl: "", shortDescription: "", link:  ""))
-                } else if key == "url" {
-                    self.rssRecordList[index].imageUrl = value
-                    self.getNetworkImage(value)
-                } else if key == "description" {
-                    self.rssRecordList[index].shortDescription = value
-                } else if key == "link" {
-                    self.rssRecordList[index].link = value
-                }
-            }
+        if elementName == "item" {
+            self.isTagFound["item"] = true
+            self.rssRecord = RssRecord()
             
+        }else if elementName == "title" {
+            self.isTagFound["title"] = true
+            
+        }else if elementName == "link" {
+            self.isTagFound["link"] = true
+            
+        }else if elementName == "pubDate" {
+            self.isTagFound["pubDate"] = true
+            
+        }else if elementName == "description" {
+            self.isTagFound["description"] = true
         }
     }
     
-    func getNetworkImage(urlString: String) -> (Request) {
-        return Alamofire.request(.GET, urlString).responseImage { (response) -> Void in
-            guard let image = response.result.value else { return }
-            self.cacheImage(image, urlString: urlString)
+    func parser(parser: NSXMLParser, foundCharacters string: String) {
+        
+        if isTagFound["title"] == true {
+            self.rssRecord?.title += string
+            
+        }else if isTagFound["link"] == true {
+            self.rssRecord?.link += string
+            
+        }else if isTagFound["pubDate"] == true {
+            self.rssRecord?.pubDate += string
+            
+        }else if isTagFound["description"] == true {
+            self.rssRecord?.description += string
         }
     }
+
+    func parser(parser: NSXMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        if elementName == "item" {
+            self.isTagFound["item"] = false
+            self.parseHtmlDescriptionForImageUrls()
+            self.rssRecordList.append(self.rssRecord!)
+            
+        }else if elementName == "title" {
+            self.isTagFound["title"] = false
+            
+        }else if elementName == "link" {
+            self.isTagFound["link"] = false
+            
+        }else if elementName == "pubDate" {
+            self.isTagFound["pubDate"] = false
+            
+        }else if elementName == "description" {
+            self.isTagFound["description"] = false
+        }
+
+    }
+    
+    func parserDidEndDocument(parser: NSXMLParser) {
+        let dispatchGroup = dispatch_group_create()
+        let dispatchQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
+        for record in rssRecordList {
+            getNetworkImage(record.imageUrl, dispatchGroup: dispatchGroup, dispatchQueue: dispatchQueue)
+        }
+        dispatch_group_notify(dispatchGroup, dispatchQueue, {
+            self.tableView.reloadData()
+            self.spinner.stopAnimating()
+        })
+    }
+    
+    func parser(parser: NSXMLParser, parseErrorOccurred parseError: NSError) {
+        self.spinner.stopAnimating()
+        self.showAlertMessage(alertTitle: "Error", alertMessage: "Error while parsing xml.")
+    }
+    
+
+    // MARK: - Utility functions
+    private func loadRSSData(){
+        self.spinner.startAnimating()
+        if let rssURL = NSURL(string: "http://news.google.com/?output=rss") {
+            self.myParser = NSXMLParser(contentsOfURL: rssURL)!
+            self.myParser.delegate = self
+            self.myParser.parse()
+        }
+        
+    }
+    
+    
+    func parseHtmlDescriptionForImageUrls() {
+        if let doc = Kanna.HTML(html: self.rssRecord!.description, encoding: NSUTF8StringEncoding) {
+            if let image = doc.at_css("img") {
+                if let imageSource = image["src"] {
+                    self.rssRecord!.imageUrl = "http:" + imageSource
+                }
+                
+            }
+        }
+        
+    }
+    
+    func getNetworkImage(urlString: String, dispatchGroup: dispatch_group_t, dispatchQueue: dispatch_queue_t) -> Void {
+        dispatch_group_enter(dispatchGroup)
+        let request  = Alamofire.request(.GET, urlString)
+        request.response(queue: dispatchQueue,
+                         responseSerializer: Request.imageResponseSerializer(),
+                         completionHandler: { (response) -> Void in
+                            dispatch_group_leave(dispatchGroup)
+                            guard let image = response.result.value else { return }
+                            self.cacheImage(image, urlString: urlString)
+        })
+    }
+    
+    private func showAlertMessage(alertTitle alertTitle: String, alertMessage: String ) -> Void {
+        let alertCtrl = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert) as UIAlertController
+        
+        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler:
+            { (action: UIAlertAction) -> Void in
+        })
+        alertCtrl.addAction(okAction)
+        self.presentViewController(alertCtrl, animated: true, completion: { (void) -> Void in
+        })
+    }
+    
     
     //MARK: = Image Caching
-    
     func cacheImage(image: Image, urlString: String) {
         imageCache.addImage(image, withIdentifier: urlString)
     }
@@ -135,21 +217,18 @@ class RssTableViewController: UIViewController, UITableViewDataSource, UITableVi
         return imageCache.imageWithIdentifier(urlString)
     }
     
-    
     // MARK: - Navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "segueShowDetails" {            
-            self.tableView.deselectRowAtIndexPath(self.selectedIndexPath, animated: true)
-            
-            let destViewController = segue.destinationViewController as! RssDetailsViewController
-            
-            destViewController.navigationItem.title = self.rssRecordList[self.selectedIndexPath.row].title
-            
-            destViewController.link = self.rssRecordList[self.selectedIndexPath.row].link
-            
+        if segue.identifier == "segueShowDetails" {
+            let selectedIndexPath : [NSIndexPath] = self.tableView.indexPathsForSelectedRows!
+            self.tableView.deselectRowAtIndexPath(selectedIndexPath[0], animated: true)
+            let destVc = segue.destinationViewController as! RssDetailsViewController
+            destVc.navigationItem.title = self.rssRecordList[selectedIndexPath[0].row].title
+            destVc.link = self.rssRecordList[selectedIndexPath[0].row].link
         }
         
     }
-
+    
+    
 }
 

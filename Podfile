@@ -35,3 +35,7 @@ pod 'AlamofireImage', '~> 2.0'
 
 #XMLParser
 pod 'XMLParser', '~> 1.0'
+
+#html parser
+use_frameworks!
+pod 'Kanna', '~> 1.0.0'

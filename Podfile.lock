@@ -2,18 +2,21 @@ PODS:
   - Alamofire (3.4.0)
   - AlamofireImage (2.4.0):
     - Alamofire (~> 3.3)
+  - Kanna (1.0.6)
   - XMLParser (1.0)
 
 DEPENDENCIES:
   - Alamofire (~> 3.4)
   - AlamofireImage (~> 2.0)
+  - Kanna (~> 1.0.0)
   - XMLParser (~> 1.0)
 
 SPEC CHECKSUMS:
   Alamofire: c19a627cefd6a95f840401c49ab1f124e07f54ee
   AlamofireImage: 87408b652e0f5ae5fe364035f15aea8b9b24c77e
+  Kanna: 9f30945bbd293a609f698ea164687ccc0990ff60
   XMLParser: e737ced4d8e6486028f741fecc0523d9ba55d0ae
 
-PODFILE CHECKSUM: 5b6b89a18d4578affa0502337de23daf1038dee7
+PODFILE CHECKSUM: bf4530334daa9e6b0ca69804443a4edd59255edf
 
 COCOAPODS: 1.0.0

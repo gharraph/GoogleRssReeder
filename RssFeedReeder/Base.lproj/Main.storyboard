@@ -35,18 +35,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Gjv-Ta-njB">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Gjv-Ta-njB">
+                                <rect key="frame" x="-4" y="0.0" width="328" height="480"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="rssCell" textLabel="g1c-vl-5aY" detailTextLabel="6g1-Kj-ipj" style="IBUITableViewCellStyleSubtitle" id="Aol-nT-dYQ" userLabel="rssCell">
-                                        <rect key="frame" x="0.0" y="92" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="92" width="328" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Aol-nT-dYQ" id="THL-il-dgP">
-                                            <rect key="frame" x="0.0" y="0.0" width="287" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="295" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="g1c-vl-5aY">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="g1c-vl-5aY">
                                                     <rect key="frame" x="15" y="6" width="31.5" height="19.5"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -65,11 +65,19 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Lem-y2-PHl">
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Lem-y2-PHl">
                                 <rect key="frame" x="150" y="230" width="20" height="20"/>
                             </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Gjv-Ta-njB" firstAttribute="leading" secondItem="RsT-iu-E5N" secondAttribute="leadingMargin" constant="-20" id="0o1-iJ-RaH"/>
+                            <constraint firstItem="dOz-6f-9xz" firstAttribute="top" secondItem="Gjv-Ta-njB" secondAttribute="bottom" id="2id-xx-Oco"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Gjv-Ta-njB" secondAttribute="trailing" constant="-20" id="R3S-wk-8CC"/>
+                            <constraint firstItem="Lem-y2-PHl" firstAttribute="centerX" secondItem="RsT-iu-E5N" secondAttribute="centerX" id="Wvb-nu-iLl"/>
+                            <constraint firstItem="Lem-y2-PHl" firstAttribute="centerY" secondItem="RsT-iu-E5N" secondAttribute="centerY" id="uBO-Bm-MiN"/>
+                            <constraint firstItem="Gjv-Ta-njB" firstAttribute="top" secondItem="cDH-4u-3A9" secondAttribute="bottom" constant="-64" id="zSO-sT-i9S"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="V07-nG-3ah"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
@@ -86,7 +94,6 @@
         <!--Details-->
         <scene sceneID="bLu-oX-xXM">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="FYw-OV-IB8" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="RssDetails" id="J1d-01-pdC" customClass="RssDetailsViewController" customModule="RssFeedReeder" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="iW0-yK-5SG"/>
@@ -100,7 +107,7 @@
                                 <rect key="frame" x="-4" y="0.0" width="328" height="480"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
                             </webView>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="9d4-dW-mp8">
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="9d4-dW-mp8">
                                 <rect key="frame" x="150" y="230" width="20" height="20"/>
                             </activityIndicatorView>
                         </subviews>
@@ -127,6 +134,7 @@
                         <outlet property="webView" destination="1cg-eK-BBf" id="FDW-HV-d2z"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FYw-OV-IB8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="316" y="382"/>
         </scene>

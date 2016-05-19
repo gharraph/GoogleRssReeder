@@ -24,8 +24,7 @@ class RssDetailsViewController: UIViewController, UIWebViewDelegate {
         
         self.webView.delegate = self
         
-        self.spinner.startAnimating()
-        
+        self.spinner.startAnimating()        
         if let fetchURL = NSURL(string: self.link! ) {
             let urlRequest = NSURLRequest(URL: fetchURL)
             self.webView.loadRequest(urlRequest)
@@ -40,7 +39,6 @@ class RssDetailsViewController: UIViewController, UIWebViewDelegate {
     
     
     // MARK: - Webview delegate
-    
     func webViewDidFinishLoad(webView: UIWebView) {
         self.spinner.stopAnimating()
     }
@@ -51,15 +49,11 @@ class RssDetailsViewController: UIViewController, UIWebViewDelegate {
     }
     
     private func showAlertMessage(alertTitle alertTitle: String, alertMessage: String ) -> Void {
-        
         let alertCtrl = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.Alert) as UIAlertController
-        
         let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler:
             { (action: UIAlertAction) -> Void in
         })
-        
         alertCtrl.addAction(okAction)
-        
         self.presentViewController(alertCtrl, animated: true, completion: { (void) -> Void in
         })
     }
